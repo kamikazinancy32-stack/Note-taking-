@@ -4,6 +4,8 @@ A simple, fast note-taking app that runs entirely in your browser. Write notes, 
 tags, archive the ones you're done with, and find anything in seconds with search. No account, no
 server, no installation required.
 
+**Try it live:** https://task-manager-gilb.onrender.com
+
 ## Features
 
 - **Create, edit and delete notes**, each with a title, tags and content.
@@ -23,6 +25,10 @@ server, no installation required.
 
 ## Getting started
 
+The easiest way is to open the [live app](https://task-manager-gilb.onrender.com) in your browser.
+
+To run it on your own computer instead:
+
 1. Download or clone this repository:
    ```
    git clone https://github.com/kamikazinancy32-stack/Note-taking-.git
@@ -31,10 +37,6 @@ server, no installation required.
 
 That's it. The app opens with a few sample notes so you can try it out. To clear them and start
 fresh, delete them, or use **Settings → Backup & Restore** to manage your notes.
-
-> **Tip:** If you use VS Code, you can also run the app with the
-> [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension:
-> right-click `index.html` and choose **Open with Live Server**.
 
 ## Keyboard shortcuts
 
@@ -88,4 +90,4 @@ npm install
 npm run build
 ```
 
-With Live Server (or any local web server) the modules load directly and no build is needed.
+When the app is served from a web server, the modules load directly and no build is needed.
