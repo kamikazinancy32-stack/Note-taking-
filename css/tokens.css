@@ -1,0 +1,159 @@
+/* ==========================================================================
+   tokens.css
+   Every colour, font, size and radius from the Figma style guide lives here.
+   The rest of the CSS only ever refers to these variables, so switching the
+   theme is just a matter of swapping the values below (see .theme-dark).
+   ========================================================================== */
+
+:root {
+  /* ---- Raw palette (names follow the Figma "Neutral / Blue / Red / Green" scales) ---- */
+  --neutral-950: #0e121b;
+  --neutral-900: #191b25;
+  --neutral-800: #232530;
+  --neutral-700: #2b303b;
+  --neutral-600: #525866;
+  --neutral-500: #717784;
+  --neutral-400: #99a0ae;
+  --neutral-300: #cacfd8;
+  --neutral-200: #e0e4ea;
+  --neutral-100: #f3f5f8;
+  --neutral-50:  #f5f7fa;
+  --white:       #ffffff;
+
+  --blue-500: #335cff;
+  --blue-700: #2547d0;
+  --blue-50:  #ebf1ff;
+
+  /* Figma uses #FB3748. White text on it only reaches 3.8:1, so buttons use a
+     slightly deeper red that passes WCAG AA (4.7:1) while looking the same. */
+  --red-500: #fb3748;
+  --red-600: #e0263a;
+  --green-500: #21c16b;
+
+  /* ---- Font families: the three options offered in Settings → Font Theme ---- */
+  --font-sans:  "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: "Noto Serif", Georgia, "Times New Roman", serif;
+  --font-mono:  "Source Code Pro", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-logo:  "Pacifico", "Brush Script MT", cursive;
+
+  /* The one variable the whole app reads. themes.js changes it via a class. */
+  --font-body: var(--font-sans);
+
+  /* ---- Type scale ("text-preset-1" … "text-preset-6" in Figma) ---- */
+  --text-1: 1.5rem;    /* 24px – page titles, note title */
+  --text-2: 1.25rem;   /* 20px */
+  --text-3: 1rem;      /* 16px – note card titles */
+  --text-4: 0.875rem;  /* 14px – UI labels, body */
+  --text-6: 0.75rem;   /* 12px – tags, dates */
+
+  --tracking-tight: -0.03em;
+  --tracking-snug:  -0.015em;
+
+  /* ---- Spacing (Figma spacing page, 4px base) ---- */
+  --space-050: 0.25rem;
+  --space-100: 0.5rem;
+  --space-150: 0.75rem;
+  --space-200: 1rem;
+  --space-250: 1.25rem;
+  --space-300: 1.5rem;
+  --space-400: 2rem;
+
+  /* ---- Radius ---- */
+  --radius-chip: 4px;
+  --radius-card: 6px;
+  --radius-control: 8px;
+  --radius-panel: 12px;
+  --radius-full: 999px;
+
+  /* ---- Layout sizes (desktop measurements from the 1440px frames) ---- */
+  --sidebar-width: 272px;
+  --list-width: 290px;
+  --actions-width: 290px;      /* right column: 16px + 242px buttons + 32px */
+  --settings-menu-width: 258px;
+  --header-height: 81px;
+  --tab-bar-height: 56px;
+
+  --duration-fast: 150ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+/* ==========================================================================
+   Colour themes
+   Components use the semantic names (--color-…), never the raw palette.
+   ========================================================================== */
+
+.theme-light {
+  color-scheme: light;
+
+  --color-bg:            var(--white);
+  --color-bg-page:       var(--neutral-100);  /* grey frame around mobile layout */
+  --color-surface-muted: var(--neutral-100);  /* selected note, secondary button */
+  --color-surface-hover: var(--neutral-50);
+  --color-border:        var(--neutral-200);
+  --color-border-strong: var(--neutral-300);
+
+  --color-text:          var(--neutral-950);
+  --color-text-body:     var(--neutral-700);
+  --color-text-muted:    var(--neutral-600);
+  --color-text-faint:    var(--neutral-500);
+
+  --color-chip-bg:       var(--neutral-200);
+  --color-chip-text:     var(--neutral-950);
+
+  --color-accent:        var(--blue-500);
+  --color-accent-hover:  var(--blue-700);
+  --color-accent-soft:   var(--blue-50);
+  --color-on-accent:     var(--white);
+
+  --color-danger:        var(--red-600);
+  --color-danger-text:   #c81e30;
+  --color-danger-soft:   #ffebec;
+  --color-success:       var(--green-500);
+
+  --color-highlight:     #fff1a8;
+  --color-focus:         var(--blue-500);
+  --color-backdrop:      rgb(14 18 27 / 0.5);
+  --shadow-raised:       0 8px 12px rgb(240 240 240 / 0.6), 0 1px 3px rgb(14 18 27 / 0.08);
+}
+
+.theme-dark {
+  color-scheme: dark;
+
+  --color-bg:            var(--neutral-950);
+  --color-bg-page:       var(--neutral-800);
+  --color-surface-muted: var(--neutral-800);
+  --color-surface-hover: var(--neutral-900);
+  --color-border:        var(--neutral-800);
+  --color-border-strong: var(--neutral-600);
+
+  --color-text:          var(--white);
+  --color-text-body:     var(--neutral-200);
+  --color-text-muted:    var(--neutral-300);
+  --color-text-faint:    var(--neutral-400);
+
+  --color-chip-bg:       var(--neutral-600);
+  --color-chip-text:     var(--white);
+
+  --color-accent:        var(--blue-500);
+  --color-accent-hover:  #4d72ff;
+  --color-accent-soft:   var(--neutral-700);
+  --color-on-accent:     var(--white);
+
+  --color-danger:        var(--red-600);
+  --color-danger-text:   #ff7a86;
+  --color-danger-soft:   #3a1d24;
+  --color-success:       var(--green-500);
+
+  --color-highlight:     #5c4a00;
+  --color-focus:         #6b8cff;
+  --color-backdrop:      rgb(0 0 0 / 0.6);
+  --shadow-raised:       0 8px 16px rgb(0 0 0 / 0.4);
+}
+
+/* ==========================================================================
+   Font themes — themes.js puts exactly one of these classes on <html>.
+   ========================================================================== */
+
+.font-sans  { --font-body: var(--font-sans); }
+.font-serif { --font-body: var(--font-serif); }
+.font-mono  { --font-body: var(--font-mono); }

@@ -1,0 +1,307 @@
+/* ==========================================================================
+   layout.css — where the big regions sit.
+   Mobile first: phones and tablets get the single-column layout from the
+   Figma "Mobile" / "Tablet" frames, then desktop (≥ 1088px) switches to the
+   four-column layout (sidebar · list · editor · actions).
+   ========================================================================== */
+
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-page);
+  padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/* ---------- Logo (shared by sidebar and mobile header) ---------- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+}
+
+.logo__mark {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.logo__word {
+  font-family: var(--font-logo);
+  font-size: 1.45rem;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--color-text);
+  padding-bottom: 4px;  /* Pacifico sits high; this optically centres it */
+}
+
+/* ---------- Mobile header + white content sheet ---------- */
+.sidebar {
+  display: none;
+}
+
+.mobile-header {
+  padding: var(--space-150) var(--space-200);
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--color-bg);
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+  padding: var(--space-250) var(--space-200);
+}
+
+.page-header {
+  margin-bottom: var(--space-200);
+}
+
+.page-header__tools {
+  display: none;
+}
+
+.page-title {
+  font-size: var(--text-1);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+  overflow-wrap: anywhere;
+}
+
+.page-title__muted {
+  color: var(--color-text-muted);
+}
+
+.notes-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.list-pane,
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.editor-pane {
+  flex: 1;
+}
+
+/* `.app` prefix: these must beat component rules like `.btn { display: inline-flex }`. */
+.app .actions-pane,
+.app .list-pane__create {
+  display: none;
+}
+
+/* ---------- Mobile "screens": the list OR the open note, never both ---------- */
+@media (max-width: 67.99em) {
+  .app[data-screen="list"] .editor-pane,
+  .app[data-screen="detail"] .list-pane,
+  .app[data-screen="detail"] .page-header,
+  .app[data-screen="detail"] .fab,
+  .app[data-view="settings"] .fab,
+  .app[data-screen="list"] .settings-panels,
+  .app[data-screen="detail"] .settings-menu {
+    display: none;
+  }
+
+  /* The search box only appears on the Search tab. */
+  .app:not([data-view="search"]) .list-pane .search-field--mobile {
+    display: none;
+  }
+}
+
+/* ---------- Bottom tab bar + floating "create" button ---------- */
+.tab-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-150) var(--space-200) calc(var(--space-150) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 6px rgb(14 18 27 / 0.04);
+}
+
+.fab {
+  position: fixed;
+  right: var(--space-200);
+  bottom: calc(var(--tab-bar-height) + var(--space-200) + env(safe-area-inset-bottom, 0px));
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: 0 6px 16px rgb(51 92 255 / 0.35);
+}
+
+.fab .icon {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.fab:hover {
+  background: var(--color-accent-hover);
+}
+
+/* ---------- Settings ---------- */
+.settings-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.settings-panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+/* ==========================================================================
+   Tablet (≥ 768px): same structure, roomier spacing, labelled tabs.
+   ========================================================================== */
+@media (min-width: 48em) {
+  .mobile-header {
+    padding: var(--space-300) var(--space-400);
+  }
+
+  .workspace {
+    padding: var(--space-300) var(--space-400);
+  }
+
+  .fab {
+    right: var(--space-400);
+    width: 4rem;
+    height: 4rem;
+  }
+
+  .fab .icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .tab-bar {
+    padding-inline: var(--space-400);
+  }
+}
+
+/* ==========================================================================
+   Desktop (≥ 1088px): sidebar | header + (list | editor | actions)
+   ========================================================================== */
+@media (min-width: 68em) {
+  .app {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+    padding: 0;
+    background: var(--color-bg);
+  }
+
+  .mobile-header,
+  .tab-bar,
+  .fab,
+  .app .search-field--mobile,
+  .app .settings-panels__back {
+    display: none;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-100);
+    padding: var(--space-150) var(--space-200);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+  }
+
+  .sidebar .logo {
+    padding: var(--space-150) 0;
+    margin-bottom: var(--space-100);
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-rows: var(--header-height) minmax(0, 1fr);
+    padding: 0;
+    border-radius: 0;
+    min-height: 0;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-300);
+    margin: 0;
+    padding: 0 var(--space-400);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-header__tools {
+    display: flex;
+    align-items: center;
+    gap: var(--space-200);
+  }
+
+  .notes-view {
+    display: grid;
+    grid-template-columns: var(--list-width) minmax(0, 1fr) var(--actions-width);
+    min-height: 0;
+  }
+
+  .list-pane,
+  .editor-pane,
+  .actions-pane {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .list-pane {
+    padding: var(--space-250) var(--space-200) var(--space-250) var(--space-400);
+    border-right: 1px solid var(--color-border);
+  }
+
+  .app .list-pane__create {
+    display: inline-flex;
+  }
+
+  .editor-pane {
+    padding: var(--space-250) var(--space-300);
+    border-right: 1px solid var(--color-border);
+  }
+
+  .app .actions-pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-150);
+    padding: var(--space-250) var(--space-400) var(--space-250) var(--space-200);
+  }
+
+  .settings-view {
+    display: grid;
+    grid-template-columns: var(--settings-menu-width) minmax(0, 1fr);
+    gap: 0;
+    min-height: 0;
+  }
+
+  .settings-menu {
+    padding: var(--space-250) var(--space-200) var(--space-250) var(--space-400);
+    border-right: 1px solid var(--color-border);
+  }
+
+  .settings-panels {
+    padding: var(--space-400);
+    max-width: calc(528px + 2 * var(--space-400));
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,892 @@
+/* ==========================================================================
+   components.css — buttons, note cards, the editor, modal, toast…
+   Class names follow BEM: .block, .block__element, .block--modifier.
+   ========================================================================== */
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-100);
+  min-height: 2.75rem;               /* 44px touch target */
+  padding: var(--space-150) var(--space-200);
+  border-radius: var(--radius-control);
+  border: 1px solid transparent;
+  font-size: var(--text-4);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btn--primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn--secondary {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
+.btn--secondary:hover {
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.btn--outline {
+  justify-content: flex-start;
+  border-color: var(--color-border-strong);
+  color: var(--color-text);
+  background: var(--color-bg);
+  cursor: pointer;
+}
+
+.btn--outline:hover {
+  background: var(--color-surface-muted);
+}
+
+.btn--danger {
+  background: var(--color-danger);
+  color: var(--white);
+}
+
+.btn--danger:hover {
+  background: #c41d30;
+}
+
+/* aria-disabled keeps the button focusable (unlike `disabled`) so keyboard
+   users can still reach it and hear why it isn't working yet. */
+.btn[aria-disabled="true"],
+.text-button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-control);
+  color: var(--color-text-muted);
+}
+
+.icon-button:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-050);
+  min-height: 2.75rem;
+  padding-inline: var(--space-050);
+  color: var(--color-text-muted);
+  font-size: var(--text-4);
+}
+
+.text-button:hover {
+  color: var(--color-text);
+}
+
+.text-button--accent {
+  color: var(--color-accent);
+  font-weight: 500;
+}
+
+.link-button {
+  color: var(--color-accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-button:hover {
+  color: var(--color-accent-hover);
+}
+
+/* ---------- Sidebar navigation items ---------- */
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-050);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: 100%;
+  min-height: 2.5rem;
+  padding: var(--space-100) var(--space-150);
+  border-radius: var(--radius-control);
+  color: var(--color-text-body);
+  font-weight: 500;
+  text-align: left;
+}
+
+.nav-item > span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nav-item__chevron {
+  visibility: hidden;
+}
+
+.nav-item:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+}
+
+/* The current page/tag is marked with aria-current; style follows semantics. */
+.nav-item[aria-current] {
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.nav-item[aria-current] > .icon:first-child {
+  color: var(--color-accent);
+}
+
+.nav-item[aria-current] .nav-item__chevron {
+  visibility: visible;
+}
+
+.sidebar__tags {
+  padding-top: var(--space-100);
+  border-top: 1px solid var(--color-border);
+}
+
+.sidebar__heading {
+  margin-bottom: var(--space-100);
+  padding: 0 var(--space-100);
+  line-height: 1.25rem;
+  color: var(--color-text-faint);
+  font-size: var(--text-4);
+  font-weight: 500;
+}
+
+/* ---------- Search ---------- */
+.search-field {
+  position: relative;
+  display: block;
+  width: 300px;
+  max-width: 100%;
+  flex-shrink: 0;   /* don't let the header squeeze it */
+}
+
+.search-field--mobile {
+  width: 100%;
+}
+
+.search-field__icon {
+  position: absolute;
+  top: 50%;
+  left: var(--space-200);
+  transform: translateY(-50%);
+  color: var(--color-text-faint);
+  pointer-events: none;
+}
+
+.search-field__input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-150) var(--space-200) var(--space-150) 2.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+}
+
+.search-field__input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.search-field__input:hover {
+  background: var(--color-surface-hover);
+}
+
+/* ---------- Note list + cards ---------- */
+.list-pane__intro {
+  color: var(--color-text-body);
+  line-height: 1.4;
+}
+
+.note-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-list:focus {
+  outline: none;
+}
+
+.note-card + .note-card {
+  border-top: 1px solid var(--color-border);
+}
+
+/*
+ * The highlighted card has no divider or gap around it in the Figma,
+ * so remove both the line and the 4px margins on either side of it.
+ */
+.note-card:has(.note-card__button[aria-current]) {
+  border-top: 0;
+}
+
+.note-card:has(.note-card__button[aria-current]) + .note-card {
+  border-top: 0;
+}
+
+.note-card__button[aria-current],
+.note-card:has(.note-card__button[aria-current]) + .note-card .note-card__button {
+  margin-top: 0;
+}
+
+.note-card__button[aria-current],
+.note-card:has(+ .note-card .note-card__button[aria-current]) .note-card__button {
+  margin-bottom: 0;
+}
+
+/* No extra space above the first card: the list starts 16px under the button. */
+.note-card:first-child .note-card__button {
+  margin-top: 0;
+}
+
+.note-card__button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-150);
+  width: 100%;
+  margin-block: var(--space-050);
+  padding: var(--space-100);
+  border-radius: var(--radius-card);
+  text-align: left;
+}
+
+.note-card__button:hover {
+  background: var(--color-surface-hover);
+}
+
+.note-card__button[aria-current] {
+  background: var(--color-surface-muted);
+}
+
+.note-card__title {
+  display: block;
+  font-size: var(--text-3);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-snug);
+  overflow-wrap: anywhere;
+}
+
+.note-card__snippet {
+  display: block;
+  color: var(--color-text-body);
+  font-size: var(--text-6);
+  line-height: 1.4;
+}
+
+.note-card__meta {
+  display: flex;
+  line-height: 1.2;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-100);
+  color: var(--color-text-body);
+  font-size: var(--text-6);
+}
+
+.note-card__location {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.note-card__location .icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+/* The "draft" card that appears while a new note is being written. */
+.note-card--draft .note-card__title {
+  color: var(--color-text-muted);
+}
+
+/* Archived notes only appear among active notes in search results. */
+.note-card--archived .note-card__title {
+  color: var(--color-text-muted);
+}
+
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-050);
+}
+
+.chip {
+  padding: 2px 6px;
+  border-radius: var(--radius-chip);
+  background: var(--color-chip-bg);
+  color: var(--color-chip-text);
+  font-size: var(--text-6);
+  line-height: 14px;     /* 14px text + 2px padding top and bottom = 18px, as in Figma */
+}
+
+.chip--status {
+  background: transparent;
+  outline: 1px solid var(--color-border-strong);
+  outline-offset: -1px;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+  padding: var(--space-100);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+/* ---------- Mobile tag index (the "Tags" tab) ---------- */
+.tag-index {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-index > li + li {
+  border-top: 1px solid var(--color-border);
+}
+
+.tag-index .nav-item {
+  min-height: 3rem;
+  padding-inline: 0;
+}
+
+/* ---------- Note editor ---------- */
+.editor-pane__placeholder {
+  color: var(--color-text-faint);
+}
+
+.mobile-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-100);
+  padding-bottom: var(--space-150);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobile-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+}
+
+@media (min-width: 68em) {
+  .mobile-toolbar {
+    display: none;
+  }
+}
+
+.note-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+}
+
+.note-form__title {
+  display: block;
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  field-sizing: content;   /* grows with its text in newer browsers; ui.js covers the rest */
+  font-size: var(--text-1);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: var(--tracking-tight);
+}
+
+.note-form__title::placeholder,
+.note-meta__input::placeholder,
+.note-form__content::placeholder {
+  color: var(--color-text-faint);
+}
+
+/* The title looks like a heading, so its focus ring goes underneath instead of around. */
+.note-form__title:focus-visible {
+  outline: none;
+  box-shadow: 0 2px 0 var(--color-focus);
+}
+
+.field__error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-050);
+  margin-top: var(--space-050);
+  color: var(--color-danger-text);
+  font-size: var(--text-6);
+}
+
+.field__error::before {
+  content: "!";
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-full);
+  background: var(--color-danger-text);
+  color: var(--color-bg);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+[aria-invalid="true"] {
+  box-shadow: 0 2px 0 var(--color-danger-text);
+}
+
+.note-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: var(--space-200);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.note-meta__row {
+  display: grid;
+  grid-template-columns: 115px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-100);
+}
+
+.note-meta dt,
+.note-meta dt label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 1.75rem;
+  color: var(--color-text-body);
+}
+
+.note-meta dt .icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.note-meta dd {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-150);
+  min-height: 1.75rem;
+  color: var(--color-text-body);
+  overflow-wrap: anywhere;
+}
+
+.note-meta dd > .field__error {
+  flex-basis: 100%;
+  margin-top: 0;
+}
+
+.note-meta__input {
+  width: 100%;
+  min-height: 1.75rem;
+  padding: var(--space-050) 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+}
+
+.note-meta__input:focus-visible {
+  outline: none;
+  box-shadow: 0 2px 0 var(--color-focus);
+}
+
+.note-form__body {
+  flex: 1;
+  display: flex;
+}
+
+.note-form__content {
+  flex: 1;
+  width: 100%;
+  min-height: 16rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-body);
+  line-height: 1.5;
+  resize: none;
+}
+
+.note-form__content:focus-visible {
+  outline: none;
+}
+
+/* Show the keyboard focus on the whole writing area instead. */
+.note-form__body:has(:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+.note-form__footer {
+  display: none;
+}
+
+@media (min-width: 68em) {
+  .note-form__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-200);
+    padding-top: var(--space-200);
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+.note-form__draft {
+  margin-left: auto;
+  color: var(--color-text-faint);
+  font-size: var(--text-6);
+}
+
+/* ---------- Mobile tab bar items ---------- */
+.tab-bar__item {
+  flex: 1;
+  max-width: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-050);
+  padding: var(--space-050) 0;
+  border-radius: 4px;
+  color: var(--color-text-muted);
+  font-size: var(--text-6);
+}
+
+.tab-bar__item[aria-current] {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.theme-dark .tab-bar__item[aria-current] {
+  color: var(--white);
+}
+
+.tab-bar__item:hover {
+  color: var(--color-text);
+}
+
+/* Phones: icons only. The label stays in the DOM, so screen readers still read it. */
+@media (max-width: 47.99em) {
+  .tab-bar__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .tab-bar__item {
+    max-width: 4.3rem;
+    padding: var(--space-050) 0;
+  }
+}
+
+/* ---------- Settings ---------- */
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-300);
+}
+
+.settings-panel__title {
+  font-size: var(--text-3);
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: var(--tracking-snug);
+}
+
+.settings-panel__hint {
+  display: block;
+  margin-top: var(--space-050);
+  color: var(--color-text-body);
+  font-size: var(--text-4);
+  line-height: 1.5;
+}
+
+.settings-panel__submit {
+  align-self: flex-end;
+}
+
+.settings-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-150);
+}
+
+.choice-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-200);
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.choice-group > legend {
+  padding: 0;
+  margin-bottom: var(--space-300);
+  float: left;            /* lets the legend take part in the flex gap like a normal block */
+  width: 100%;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-200);
+  padding: var(--space-200);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  cursor: pointer;
+}
+
+.choice:hover {
+  background: var(--color-surface-hover);
+}
+
+.choice:has(:checked) {
+  background: var(--color-surface-muted);
+}
+
+.choice:has(:focus-visible) {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.choice__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.choice__icon--sample {
+  font-size: var(--text-3);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.choice__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.choice__name {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.choice__description {
+  color: var(--color-text-body);
+  font-size: var(--text-6);
+}
+
+/* Custom radio: a real <input type="radio">, restyled. Keyboard arrows still work. */
+.choice__radio {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 2px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.choice__radio::after {
+  content: "";
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius-full);
+  background: var(--white);
+  transform: scale(0);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.choice__radio:checked {
+  border: 0;
+  background: var(--color-accent);
+}
+
+.choice__radio:checked::after {
+  transform: scale(1);
+}
+
+.choice__radio:focus-visible {
+  outline: none;  /* the whole .choice card shows the ring instead */
+}
+
+/* ---------- Confirmation modal ---------- */
+.modal {
+  width: min(440px, calc(100% - 2rem));
+  margin: auto;        /* the reset in base.css removes the browser's centring */
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: var(--shadow-raised);
+}
+
+.modal::backdrop {
+  background: var(--color-backdrop);
+}
+
+.modal[open] {
+  animation: modal-in 160ms var(--ease-out);
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+.modal__body {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-200);
+  padding: var(--space-250);
+}
+
+.modal__icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-control);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+.modal--danger .modal__icon {
+  background: var(--color-danger-soft);
+  color: var(--color-danger-text);
+}
+
+.modal__title {
+  margin-bottom: 6px;
+  font-size: var(--text-3);
+  font-weight: 600;
+}
+
+.modal__message {
+  color: var(--color-text-body);
+  line-height: 1.45;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-200);
+  padding: var(--space-200) var(--space-250);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---------- Toast ---------- */
+.toast-region {
+  position: fixed;
+  right: var(--space-200);
+  bottom: calc(var(--tab-bar-height) + var(--space-200) + 4rem);
+  left: var(--space-200);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-100);
+  pointer-events: none;
+}
+
+@media (min-width: 68em) {
+  .toast-region {
+    left: auto;
+    bottom: var(--space-400);
+    right: var(--space-400);
+  }
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--space-100);
+  width: min(390px, 100%);
+  padding: var(--space-100);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  box-shadow: var(--shadow-raised);
+  pointer-events: auto;
+  animation: toast-in 200ms var(--ease-out);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+.toast__icon {
+  color: var(--color-success);
+}
+
+.toast--error .toast__icon {
+  color: var(--color-danger-text);
+}
+
+.toast__message {
+  flex: 1;
+  color: var(--color-text);
+  font-size: var(--text-6);
+}
+
+.toast__action {
+  font-size: var(--text-6);
+  color: var(--color-text);
+}
+
+.toast .icon-button {
+  width: 2rem;
+  height: 2rem;
+}
+
+.toast .icon-button .icon {
+  width: 1rem;
+  height: 1rem;
+}

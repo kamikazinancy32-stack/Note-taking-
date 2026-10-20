@@ -1,0 +1,11 @@
+{
+  "name": "notes-app",
+  "private": true,
+  "description": "Note-taking app (DOM & Browser APIs project)",
+  "scripts": {
+    "build": "esbuild js/main.js --bundle --format=iife --target=es2020 --banner:js=\"/* GENERATED from js/*.js by `npm run build` — do not edit. Used only when index.html is opened straight from disk (file://). */\" --outfile=js/app.bundle.js"
+  },
+  "devDependencies": {
+    "esbuild": "0.24.0"
+  }
+}

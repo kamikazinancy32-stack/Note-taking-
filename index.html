@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-light font-sans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Write, tag, search and archive your notes. Everything is stored in your browser.">
+  <meta name="theme-color" content="#ffffff">
+  <title>Notes</title>
+
+  <!--
+    Applies the saved theme before the first paint so a dark-mode user never
+    sees a white flash. themes.js takes over once the modules load; this is
+    only a tiny early copy of the same idea.
+  -->
+  <script>
+    try {
+      const prefs = JSON.parse(localStorage.getItem('notes-app:preferences')) || {};
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = prefs.theme === 'system' || !prefs.theme
+        ? (prefersDark ? 'dark' : 'light')
+        : prefs.theme;
+      document.documentElement.className = `theme-${theme} font-${prefs.font || 'sans'}`;
+    } catch (error) { /* storage blocked: keep the defaults on <html> */ }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif:wght@400;500;600;700&family=Pacifico&family=Source+Code+Pro:wght@400;500;600;700&display=swap">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#note-list">Skip to your notes</a>
+
+  <!-- Icon sprite: each <symbol> is drawn once and reused with <use href="#icon-…">. -->
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="icon-feather" viewBox="0 0 28 28">
+      <path fill="#335cff" d="M26.5 2.5C17.4 2.6 9.4 8.3 6.6 17l-.9 2.9 1.1 1.1 3.4-1.3c8.6-3.3 14.6-10.4 16.3-17.2z"/>
+      <path fill="#335cff" d="M6.3 19.6 2.6 24.4l1 1 4.8-3.8z"/>
+      <path stroke="#335cff" stroke-width="2" stroke-linecap="round" fill="none" d="M8.5 25.5h6"/>
+    </symbol>
+    <symbol id="icon-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19.5a1 1 0 0 1-1 1h-4.25v-6h-5.5v6H5a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="icon-archive" viewBox="0 0 24 24"><path d="M4.5 5.5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1zM4.5 13.5h4l1.25 2.25h4.5l1.25-2.25h4M12 7.5v5M9.75 10.25 12 12.5l2.25-2.25"/></symbol>
+    <symbol id="icon-restore" viewBox="0 0 24 24"><path d="M4.5 5.5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-13a1 1 0 0 1-1-1zM4.5 13.5h4l1.25 2.25h4.5l1.25-2.25h4M12 12.5v-5M9.75 9.75 12 7.5l2.25 2.25"/></symbol>
+    <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M3.75 11.6V5.25a1.5 1.5 0 0 1 1.5-1.5h6.35a1.5 1.5 0 0 1 1.06.44l7.15 7.15a1.5 1.5 0 0 1 0 2.12l-6.35 6.35a1.5 1.5 0 0 1-2.12 0l-7.15-7.15a1.5 1.5 0 0 1-.44-1.06z"/><circle cx="8.25" cy="8.25" r="1.25"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.5V12l3 2"/></symbol>
+    <symbol id="icon-status" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="icon-pin" viewBox="0 0 24 24"><path d="M12 20.5s-6.25-5.4-6.25-10.5a6.25 6.25 0 0 1 12.5 0c0 5.1-6.25 10.5-6.25 10.5z"/><circle cx="12" cy="10" r="2.25"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.75"/><path d="m16 16 4.25 4.25"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><path d="M12.22 2.75h-.44a1.8 1.8 0 0 0-1.8 1.8v.17a1.8 1.8 0 0 1-.9 1.56l-.39.22a1.8 1.8 0 0 1-1.8 0l-.13-.07a1.8 1.8 0 0 0-2.46.66l-.22.38a1.8 1.8 0 0 0 .66 2.46l.13.08a1.8 1.8 0 0 1 .9 1.55v.46a1.8 1.8 0 0 1-.9 1.57l-.13.08a1.8 1.8 0 0 0-.66 2.46l.22.38a1.8 1.8 0 0 0 2.46.66l.13-.07a1.8 1.8 0 0 1 1.8 0l.39.22a1.8 1.8 0 0 1 .9 1.56v.17a1.8 1.8 0 0 0 1.8 1.8h.44a1.8 1.8 0 0 0 1.8-1.8v-.17a1.8 1.8 0 0 1 .9-1.56l.39-.22a1.8 1.8 0 0 1 1.8 0l.13.07a1.8 1.8 0 0 0 2.46-.66l.22-.38a1.8 1.8 0 0 0-.66-2.46l-.13-.08a1.8 1.8 0 0 1-.9-1.57v-.46a1.8 1.8 0 0 1 .9-1.55l.13-.08a1.8 1.8 0 0 0 .66-2.46l-.22-.38a1.8 1.8 0 0 0-2.46-.66l-.13.07a1.8 1.8 0 0 1-1.8 0l-.39-.22a1.8 1.8 0 0 1-.9-1.56v-.17a1.8 1.8 0 0 0-1.8-1.8z"/><circle cx="12" cy="12" r="2.75"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V5.25a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1V7M6.25 7l.9 11.6a1.5 1.5 0 0 0 1.5 1.4h6.7a1.5 1.5 0 0 0 1.5-1.4L17.75 7M10 11v5M14 11v5"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="m8.5 12.25 2.4 2.4 4.6-4.9"/></symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.75"/><path d="M12 3v1.75M12 19.25V21M3 12h1.75M19.25 12H21M5.6 5.6l1.25 1.25M17.15 17.15l1.25 1.25M5.6 18.4l1.25-1.25M17.15 6.85l1.25-1.25"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M19.75 14.4A7.75 7.75 0 1 1 9.6 4.25a6.25 6.25 0 0 0 10.15 10.15z"/></symbol>
+    <symbol id="icon-system" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 3.75a8.25 8.25 0 0 1 0 16.5z" fill="currentColor"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 4v11M7.75 10.75 12 15l4.25-4.25M5 19.5h14"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 15V4M7.75 8.25 12 4l4.25 4.25M5 19.5h14"/></symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.75"/><path d="M5 6v12c0 1.5 3.1 2.75 7 2.75s7-1.25 7-2.75V6M5 12c0 1.5 3.1 2.75 7 2.75S19 13.5 19 12"/></symbol>
+    <symbol id="icon-font" viewBox="0 0 24 24"><path d="M4 19 9.5 5h1L16 19M6.25 14h7.5M17 12.5c.6-.6 1.4-.9 2.25-.75 1 .2 1.75 1 1.75 2v5.25M21 16h-2.5a1.75 1.75 0 0 0 0 3.5c1.4 0 2.5-1 2.5-2.25"/></symbol>
+  </svg>
+
+  <div class="app" id="app" data-view="all" data-screen="list">
+
+    <!-- ========== Desktop sidebar ========== -->
+    <aside class="sidebar" aria-label="Notes navigation">
+      <p class="logo">
+        <svg class="logo__mark" aria-hidden="true"><use href="#icon-feather"></use></svg>
+        <span class="logo__word">Notes</span>
+      </p>
+
+      <nav aria-label="Note collections">
+        <ul class="nav-list" role="list">
+          <li>
+            <button class="nav-item" type="button" data-nav="all">
+              <svg class="icon" aria-hidden="true"><use href="#icon-home"></use></svg>
+              <span>All Notes</span>
+              <svg class="icon nav-item__chevron" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+            </button>
+          </li>
+          <li>
+            <button class="nav-item" type="button" data-nav="archived">
+              <svg class="icon" aria-hidden="true"><use href="#icon-archive"></use></svg>
+              <span>Archived Notes</span>
+              <svg class="icon nav-item__chevron" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar__tags">
+        <h2 class="sidebar__heading" id="sidebar-tags-heading">Tags</h2>
+        <!-- Filled by ui.updateTagList() whenever notes change. -->
+        <ul class="nav-list" id="sidebar-tags" role="list" aria-labelledby="sidebar-tags-heading"></ul>
+      </div>
+    </aside>
+
+    <!-- ========== Mobile / tablet logo bar ========== -->
+    <header class="mobile-header">
+      <p class="logo">
+        <svg class="logo__mark" aria-hidden="true"><use href="#icon-feather"></use></svg>
+        <span class="logo__word">Notes</span>
+      </p>
+    </header>
+
+    <main class="workspace" id="main">
+      <header class="page-header">
+        <h1 class="page-title" id="page-title" tabindex="-1">All Notes</h1>
+
+        <div class="page-header__tools">
+          <search class="search-field">
+            <label class="visually-hidden" for="search-desktop">Search notes</label>
+            <svg class="icon search-field__icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+            <input class="search-field__input" id="search-desktop" type="search"
+                   placeholder="Search by title, content, or tags…" autocomplete="off"
+                   aria-keyshortcuts="/" data-search-input>
+          </search>
+          <button class="icon-button" type="button" data-nav="settings" aria-label="Settings">
+            <svg class="icon" aria-hidden="true"><use href="#icon-settings"></use></svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- ========== Notes: list + editor + actions ========== -->
+      <div class="notes-view" id="notes-view">
+
+        <section class="list-pane" aria-label="Note list">
+          <button class="btn btn--primary btn--block list-pane__create" type="button" data-action="new-note">
+            + Create New Note
+          </button>
+
+          <search class="search-field search-field--mobile">
+            <label class="visually-hidden" for="search-mobile">Search notes</label>
+            <svg class="icon search-field__icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+            <input class="search-field__input" id="search-mobile" type="search"
+                   placeholder="Search by title, content, or tags…" autocomplete="off" data-search-input>
+          </search>
+
+          <!-- Short sentence explaining the current filter, e.g. which tag is selected. -->
+          <p class="list-pane__intro" id="list-intro" hidden></p>
+
+          <!-- One delegated listener on this <ul> handles clicks and arrow keys for every card. -->
+          <ul class="note-list" id="note-list" role="list" tabindex="-1" aria-describedby="list-intro"></ul>
+
+          <div class="empty-state" id="empty-state" hidden></div>
+
+          <!-- Mobile/tablet "Tags" tab reuses the same tag data as the desktop sidebar. -->
+          <ul class="tag-index" id="mobile-tags" role="list" aria-label="All tags" hidden></ul>
+        </section>
+
+        <section class="editor-pane" id="editor-pane" aria-label="Note editor" tabindex="-1">
+          <!-- Mobile/tablet only: the actions live in a toolbar above the note. -->
+          <div class="mobile-toolbar" role="toolbar" aria-label="Note actions">
+            <button class="text-button" type="button" data-action="go-back">
+              <svg class="icon" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
+              Go Back
+            </button>
+            <div class="mobile-toolbar__group">
+              <button class="icon-button" type="button" data-action="delete" data-requires-note aria-label="Delete note">
+                <svg class="icon" aria-hidden="true"><use href="#icon-trash"></use></svg>
+              </button>
+              <button class="icon-button" type="button" data-action="toggle-archive" data-requires-note data-archive-button aria-label="Archive note">
+                <svg class="icon" aria-hidden="true"><use href="#icon-archive"></use></svg>
+              </button>
+              <button class="text-button" type="button" data-action="cancel-edit">Cancel</button>
+              <button class="text-button text-button--accent" type="submit" form="note-form" data-save-button>Save Note</button>
+            </div>
+          </div>
+
+          <form class="note-form" id="note-form" novalidate aria-label="Edit note">
+            <div class="field">
+              <label class="visually-hidden" for="note-title">Note title</label>
+              <!-- A one-row textarea (not an <input>) so long titles wrap instead of being cut off. -->
+              <textarea class="note-form__title" id="note-title" name="title" rows="1"
+                        placeholder="Enter a title…" autocomplete="off" required
+                        maxlength="80" aria-describedby="note-title-error"></textarea>
+              <p class="field__error" id="note-title-error" hidden></p>
+            </div>
+
+            <dl class="note-meta">
+              <div class="note-meta__row">
+                <dt>
+                  <label for="note-tags">
+                    <svg class="icon" aria-hidden="true"><use href="#icon-tag"></use></svg>
+                    Tags
+                  </label>
+                </dt>
+                <dd>
+                  <input class="note-meta__input" id="note-tags" name="tags" type="text"
+                         placeholder="Add tags separated by commas (e.g. Work, Planning)"
+                         autocomplete="off" aria-describedby="note-tags-error">
+                  <p class="field__error" id="note-tags-error" hidden></p>
+                </dd>
+              </div>
+
+              <div class="note-meta__row" id="note-status-row" hidden>
+                <dt>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-status"></use></svg>
+                  Status
+                </dt>
+                <dd>Archived</dd>
+              </div>
+
+              <div class="note-meta__row">
+                <dt>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-clock"></use></svg>
+                  Last edited
+                </dt>
+                <dd id="note-edited">Not yet saved</dd>
+              </div>
+
+              <div class="note-meta__row">
+                <dt>
+                  <svg class="icon" aria-hidden="true"><use href="#icon-pin"></use></svg>
+                  Location
+                </dt>
+                <dd class="note-meta__location">
+                  <span id="note-location">Not added</span>
+                  <button class="link-button" type="button" data-action="add-location" id="location-button">Add my location</button>
+                  <button class="link-button" type="button" data-action="remove-location" id="remove-location-button" hidden>Remove</button>
+                </dd>
+              </div>
+            </dl>
+
+            <div class="note-form__body">
+              <label class="visually-hidden" for="note-content">Note content</label>
+              <textarea class="note-form__content" id="note-content" name="content"
+                        placeholder="Start typing your note here…" aria-keyshortcuts="Control+Enter"></textarea>
+            </div>
+
+            <footer class="note-form__footer">
+              <button class="btn btn--primary" type="submit" data-save-button>Save Note</button>
+              <button class="btn btn--secondary" type="button" data-action="cancel-edit">Cancel</button>
+              <p class="note-form__draft" id="draft-status"></p>
+            </footer>
+          </form>
+
+          <p class="editor-pane__placeholder" id="editor-placeholder" hidden>
+            Select a note to read it, or create a new one.
+          </p>
+        </section>
+
+        <aside class="actions-pane" id="actions-pane" aria-label="Note actions">
+          <button class="btn btn--outline btn--block" type="button" data-action="toggle-archive" data-requires-note data-archive-button>
+            <svg class="icon" aria-hidden="true"><use href="#icon-archive"></use></svg>
+            <span data-archive-label>Archive Note</span>
+          </button>
+          <button class="btn btn--outline btn--block" type="button" data-action="delete" data-requires-note>
+            <svg class="icon" aria-hidden="true"><use href="#icon-trash"></use></svg>
+            Delete Note
+          </button>
+        </aside>
+      </div>
+
+      <!-- ========== Settings ========== -->
+      <div class="settings-view" id="settings-view" hidden>
+        <nav class="settings-menu" aria-label="Settings sections">
+          <ul class="nav-list" role="list">
+            <li>
+              <button class="nav-item" type="button" data-settings-panel="color">
+                <svg class="icon" aria-hidden="true"><use href="#icon-sun"></use></svg>
+                <span>Color Theme</span>
+                <svg class="icon nav-item__chevron" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" type="button" data-settings-panel="font">
+                <svg class="icon" aria-hidden="true"><use href="#icon-font"></use></svg>
+                <span>Font Theme</span>
+                <svg class="icon nav-item__chevron" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" type="button" data-settings-panel="data">
+                <svg class="icon" aria-hidden="true"><use href="#icon-database"></use></svg>
+                <span>Backup &amp; Restore</span>
+                <svg class="icon nav-item__chevron" aria-hidden="true"><use href="#icon-chevron-right"></use></svg>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="settings-panels">
+          <button class="text-button settings-panels__back" type="button" data-action="go-back">
+            <svg class="icon" aria-hidden="true"><use href="#icon-chevron-left"></use></svg>
+            Settings
+          </button>
+
+          <form class="settings-panel" id="color-form" data-panel="color" hidden>
+            <fieldset class="choice-group">
+              <legend>
+                <h2 class="settings-panel__title" tabindex="-1">Color Theme</h2>
+                <span class="settings-panel__hint">Choose your color theme:</span>
+              </legend>
+
+              <label class="choice">
+                <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="#icon-sun"></use></svg></span>
+                <span class="choice__text">
+                  <span class="choice__name">Light Mode</span>
+                  <span class="choice__description">Pick a clean and classic light theme</span>
+                </span>
+                <input class="choice__radio" type="radio" name="theme" value="light">
+              </label>
+              <label class="choice">
+                <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="#icon-moon"></use></svg></span>
+                <span class="choice__text">
+                  <span class="choice__name">Dark Mode</span>
+                  <span class="choice__description">Select a sleek and modern dark theme</span>
+                </span>
+                <input class="choice__radio" type="radio" name="theme" value="dark">
+              </label>
+              <label class="choice">
+                <span class="choice__icon"><svg class="icon" aria-hidden="true"><use href="#icon-system"></use></svg></span>
+                <span class="choice__text">
+                  <span class="choice__name">System</span>
+                  <span class="choice__description">Adapts to your device’s theme</span>
+                </span>
+                <input class="choice__radio" type="radio" name="theme" value="system">
+              </label>
+            </fieldset>
+            <button class="btn btn--primary settings-panel__submit" type="submit">Apply Changes</button>
+          </form>
+
+          <form class="settings-panel" id="font-form" data-panel="font" hidden>
+            <fieldset class="choice-group">
+              <legend>
+                <h2 class="settings-panel__title" tabindex="-1">Font Theme</h2>
+                <span class="settings-panel__hint">Choose your font theme:</span>
+              </legend>
+
+              <label class="choice">
+                <span class="choice__icon choice__icon--sample" style="font-family: var(--font-sans)" aria-hidden="true">Aa</span>
+                <span class="choice__text">
+                  <span class="choice__name">Sans-serif</span>
+                  <span class="choice__description">Clean and modern, easy to read.</span>
+                </span>
+                <input class="choice__radio" type="radio" name="font" value="sans">
+              </label>
+              <label class="choice">
+                <span class="choice__icon choice__icon--sample" style="font-family: var(--font-serif)" aria-hidden="true">Aa</span>
+                <span class="choice__text">
+                  <span class="choice__name">Serif</span>
+                  <span class="choice__description">Classic and elegant for a timeless feel.</span>
+                </span>
+                <input class="choice__radio" type="radio" name="font" value="serif">
+              </label>
+              <label class="choice">
+                <span class="choice__icon choice__icon--sample" style="font-family: var(--font-mono)" aria-hidden="true">Aa</span>
+                <span class="choice__text">
+                  <span class="choice__name">Monospace</span>
+                  <span class="choice__description">Code-like, great for a technical vibe.</span>
+                </span>
+                <input class="choice__radio" type="radio" name="font" value="mono">
+              </label>
+            </fieldset>
+            <button class="btn btn--primary settings-panel__submit" type="submit">Apply Changes</button>
+          </form>
+
+          <section class="settings-panel" data-panel="data" aria-labelledby="data-heading" hidden>
+            <h2 class="settings-panel__title" id="data-heading" tabindex="-1">Backup &amp; Restore</h2>
+            <p class="settings-panel__hint">
+              Your notes live only in this browser. Download a copy to keep them safe,
+              or load a copy you saved earlier.
+            </p>
+            <div class="settings-panel__actions">
+              <button class="btn btn--outline" type="button" data-action="export-notes">
+                <svg class="icon" aria-hidden="true"><use href="#icon-download"></use></svg>
+                Download notes (.json)
+              </button>
+              <!-- The real file input is visually hidden; its label is styled as a button. -->
+              <input class="visually-hidden" id="import-file" type="file" accept="application/json,.json">
+              <label class="btn btn--outline" for="import-file">
+                <svg class="icon" aria-hidden="true"><use href="#icon-upload"></use></svg>
+                Load notes from file
+              </label>
+              <button class="btn btn--outline" type="button" data-action="reset-notes">
+                <svg class="icon" aria-hidden="true"><use href="#icon-restore"></use></svg>
+                Reset to Figma notes
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <!-- ========== Mobile / tablet extras ========== -->
+    <button class="fab" type="button" data-action="new-note" aria-label="Create new note">
+      <svg class="icon" aria-hidden="true"><use href="#icon-plus"></use></svg>
+    </button>
+
+    <nav class="tab-bar" aria-label="Main">
+      <button class="tab-bar__item" type="button" data-nav="all">
+        <svg class="icon" aria-hidden="true"><use href="#icon-home"></use></svg>
+        <span class="tab-bar__label">Home</span>
+      </button>
+      <button class="tab-bar__item" type="button" data-nav="search">
+        <svg class="icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+        <span class="tab-bar__label">Search</span>
+      </button>
+      <button class="tab-bar__item" type="button" data-nav="archived">
+        <svg class="icon" aria-hidden="true"><use href="#icon-archive"></use></svg>
+        <span class="tab-bar__label">Archived</span>
+      </button>
+      <button class="tab-bar__item" type="button" data-nav="tags">
+        <svg class="icon" aria-hidden="true"><use href="#icon-tag"></use></svg>
+        <span class="tab-bar__label">Tags</span>
+      </button>
+      <button class="tab-bar__item" type="button" data-nav="settings">
+        <svg class="icon" aria-hidden="true"><use href="#icon-settings"></use></svg>
+        <span class="tab-bar__label">Settings</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- Confirmation modal. Native <dialog> gives us Escape-to-close and a focus trap for free. -->
+  <dialog class="modal" id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <form method="dialog" class="modal__form">
+      <div class="modal__body">
+        <span class="modal__icon">
+          <svg class="icon" aria-hidden="true"><use id="confirm-icon" href="#icon-trash"></use></svg>
+        </span>
+        <div>
+          <h2 class="modal__title" id="confirm-title">Delete Note</h2>
+          <p class="modal__message" id="confirm-message"></p>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" value="cancel" id="confirm-cancel">Cancel</button>
+        <button class="btn btn--primary" value="confirm" id="confirm-ok">Delete Note</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Toasts are announced politely by screen readers because of role="status". -->
+  <div class="toast-region" id="toast-region" role="status" aria-live="polite"></div>
+
+  <!-- Off-screen announcer for things that change silently (search result counts, etc.). -->
+  <p class="visually-hidden" id="announcer" aria-live="polite"></p>
+
+  <!--
+    Browsers refuse to load ES modules from file:// pages (double-clicking
+    index.html). In that case only, load js/app.bundle.js: the same modules
+    combined into one ordinary script by `npm run build`. With Live Server
+    (http://) the real modules in js/ run and this does nothing.
+  -->
+  <script>
+    if (location.protocol === 'file:') {
+      const bundle = document.createElement('script');
+      bundle.src = 'js/app.bundle.js';
+      document.body.append(bundle);
+    }
+  </script>
+</body>
+</html>
