@@ -4,7 +4,7 @@ A simple, fast note-taking app that runs entirely in your browser. Write notes, 
 tags, archive the ones you're done with, and find anything in seconds with search. No account, no
 server, no installation required.
 
-**Try it live:** https://task-manager-gilb.onrender.com
+**Try it live:** https://kamikazinancy32-stack.github.io/Note-taking-/
 
 ## Features
 
@@ -25,7 +25,7 @@ server, no installation required.
 
 ## Getting started
 
-The easiest way is to open the [live app](https://task-manager-gilb.onrender.com) in your browser.
+The easiest way is to open the [live app](https://kamikazinancy32-stack.github.io/Note-taking-/) in your browser.
 
 To run it on your own computer instead:
 
